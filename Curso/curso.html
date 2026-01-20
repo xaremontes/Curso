@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberGuard: Academia de Malware</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap');
+        
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: #0f172a;
+            color: #f1f5f9;
+        }
+
+        .kahoot-card {
+            transition: all 0.2s ease;
+        }
+
+        .kahoot-card:hover {
+            transform: translateY(-4px);
+            filter: brightness(1.1);
+        }
+
+        .progress-bar {
+            transition: width 0.5s ease-in-out;
+        }
+
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+
+        @keyframes floating {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .option-red { background-color: #e21b3c; }
+        .option-blue { background-color: #1368ce; }
+        .option-yellow { background-color: #d89e00; }
+        .option-green { background-color: #26890c; }
+        
+        .module-card {
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        .module-card:hover {
+            transform: scale(1.02);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Header / Navbar -->
+    <nav class="bg-slate-900 border-b border-slate-800 p-4 sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fas fa-shield-virus text-cyan-400 text-2xl"></i>
+                <span class="text-xl font-bold tracking-tight">Cyber<span class="text-cyan-400">Guard</span></span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="text-right hidden sm:block">
+                    <p class="text-xs text-slate-400 uppercase font-bold">Puntos Totales</p>
+                    <p id="total-score" class="text-lg font-bold text-yellow-400">0 XP</p>
+                </div>
+                <div class="h-10 w-10 rounded-full bg-slate-700 flex items-center justify-center border-2 border-cyan-500">
+                    <i class="fas fa-user text-slate-300"></i>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main id="app-container" class="flex-grow flex flex-col items-center justify-center p-4 max-w-5xl mx-auto w-full">
+        
+        <!-- Pantalla de Inicio -->
+        <div id="screen-start" class="text-center space-y-8 animate-fade-in">
+            <div class="space-y-4">
+                <h1 class="text-4xl md:text-6xl font-bold leading-tight">Curso Maestro de <br><span class="text-cyan-400">Tipos de Malware</span></h1>
+                <p class="text-slate-400 text-lg max-w-2xl mx-auto italic">"Comprendiendo las Amenazas del Siglo XXI"</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-slate-800/50 p-6 rounded-2xl border border-slate-700">
+                    <i class="fas fa-microchip text-3xl text-blue-400 mb-4"></i>
+                    <h3 class="font-bold">Análisis Técnico</h3>
+                    <p class="text-sm text-slate-400 mt-2">Basado en frameworks de MITRE y NIST.</p>
+                </div>
+                <div class="bg-slate-800/50 p-6 rounded-2xl border border-slate-700">
+                    <i class="fas fa-trophy text-3xl text-yellow-400 mb-4"></i>
+                    <h3 class="font-bold">Modo Competitivo</h3>
+                    <p class="text-sm text-slate-400 mt-2">Supera los quizes estilo Kahoot.</p>
+                </div>
+                <div class="bg-slate-800/50 p-6 rounded-2xl border border-slate-700">
+                    <i class="fas fa-user-shield text-3xl text-green-400 mb-4"></i>
+                    <h3 class="font-bold">Prevención</h3>
+                    <p class="text-sm text-slate-400 mt-2">Aprende a proteger tus sistemas.</p>
+                </div>
+            </div>
+
+            <button onclick="showModuleSelector()" class="bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-black py-4 px-12 rounded-full text-xl transition-all shadow-[0_0_20px_rgba(34,211,238,0.3)]">
+                EMPEZAR APRENDIZAJE
+            </button>
+        </div>
+
+        <!-- Selector de Módulos -->
+        <div id="screen-modules" class="hidden w-full space-y-6">
+            <h2 class="text-3xl font-bold mb-8 flex items-center">
+                <button onclick="showStart()" class="mr-4 text-slate-500 hover:text-white"><i class="fas fa-arrow-left"></i></button>
+                Contenido del Curso
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="module-list">
+                <!-- Se genera dinámicamente -->
+            </div>
+        </div>
+
+        <!-- Vista de Contenido del Módulo -->
+        <div id="screen-content" class="hidden w-full max-w-3xl space-y-6">
+            <div class="flex justify-between items-center mb-4">
+                <button onclick="showModuleSelector()" class="text-slate-400 hover:text-white flex items-center">
+                    <i class="fas fa-chevron-left mr-2"></i> Volver
+                </button>
+                <div id="module-badge" class="bg-cyan-900/50 text-cyan-400 px-3 py-1 rounded-full text-xs font-bold border border-cyan-800 uppercase">
+                    Módulo 1
+                </div>
+            </div>
+            
+            <div id="module-body" class="bg-slate-800 p-8 rounded-3xl border border-slate-700 shadow-xl space-y-6">
+                <!-- Contenido dinámico -->
+            </div>
+
+            <button onclick="startQuiz()" class="w-full bg-green-500 hover:bg-green-400 text-slate-900 font-bold py-4 rounded-2xl text-lg flex items-center justify-center space-x-2">
+                <i class="fas fa-bolt"></i>
+                <span>INICIAR DESAFÍO (5 PREGUNTAS)</span>
+            </button>
+        </div>
+
+        <!-- Vista de Quiz -->
+        <div id="screen-quiz" class="hidden w-full max-w-4xl space-y-6">
+            <div class="flex items-center justify-between mb-2">
+                <span id="quiz-progress-text" class="text-sm font-bold text-slate-400 tracking-widest uppercase">Pregunta 1 de 5</span>
+                <div class="bg-slate-800 h-2 w-48 rounded-full overflow-hidden">
+                    <div id="quiz-progress-bar" class="progress-bar bg-cyan-400 h-full" style="width: 20%;"></div>
+                </div>
+            </div>
+
+            <div class="bg-white text-slate-900 p-10 rounded-3xl text-center shadow-2xl min-h-[180px] flex items-center justify-center">
+                <h2 id="quiz-question" class="text-2xl font-bold">Pregunta</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <button onclick="checkAnswer(0)" class="kahoot-card p-6 rounded-xl text-left flex items-center space-x-4 option-red h-24">
+                    <i class="fas fa-triangle text-2xl opacity-50"></i>
+                    <span id="opt-0" class="text-lg font-bold text-white">Opción A</span>
+                </button>
+                <button onclick="checkAnswer(1)" class="kahoot-card p-6 rounded-xl text-left flex items-center space-x-4 option-blue h-24">
+                    <i class="fas fa-diamond text-2xl opacity-50"></i>
+                    <span id="opt-1" class="text-lg font-bold text-white">Opción B</span>
+                </button>
+                <button onclick="checkAnswer(2)" class="kahoot-card p-6 rounded-xl text-left flex items-center space-x-4 option-yellow h-24">
+                    <i class="fas fa-circle text-2xl opacity-50"></i>
+                    <span id="opt-2" class="text-lg font-bold text-white">Opción C</span>
+                </button>
+                <button onclick="checkAnswer(3)" class="kahoot-card p-6 rounded-xl text-left flex items-center space-x-4 option-green h-24">
+                    <i class="fas fa-square text-2xl opacity-50"></i>
+                    <span id="opt-3" class="text-lg font-bold text-white">Opción D</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Pantalla de Feedback -->
+        <div id="screen-feedback" class="hidden text-center space-y-6">
+            <div id="feedback-icon-container" class="h-24 w-24 mx-auto rounded-full flex items-center justify-center text-4xl mb-4"></div>
+            <h2 id="feedback-title" class="text-4xl font-black">¡CORRECTO!</h2>
+            <p id="feedback-points" class="text-yellow-400 text-2xl font-bold">+ 1000 Puntos</p>
+            <button onclick="nextQuestion()" class="bg-cyan-500 text-slate-900 font-black py-4 px-12 rounded-xl text-xl">SIGUIENTE</button>
+        </div>
+
+        <!-- Resultados Finales -->
+        <div id="screen-results" class="hidden text-center space-y-8">
+            <i class="fas fa-medal text-8xl text-yellow-400 floating"></i>
+            <div>
+                <h2 class="text-3xl font-bold">¡Módulo Superado!</h2>
+                <p class="text-slate-400 mt-2">Has completado esta sección del curso.</p>
+            </div>
+            <div class="bg-slate-800 p-8 rounded-3xl border border-slate-700 max-w-sm mx-auto">
+                <p id="final-module-score" class="text-5xl font-black text-cyan-400">0</p>
+                <p class="text-xs uppercase text-slate-500 font-bold mt-2">XP Ganados</p>
+            </div>
+            <button onclick="showModuleSelector()" class="bg-cyan-500 text-slate-900 font-bold py-4 px-8 rounded-xl">REGRESAR AL MAPA</button>
+        </div>
+
+    </main>
+
+    <footer class="p-6 text-center text-slate-500 text-xs border-t border-slate-800">
+        <p>© 2026 Curso Interactivo: Tipos de Malware</p>
+    </footer>
+
+    <script>
+        const courseData = [
+            {
+                id: 0,
+                title: "01. Definición y Evolución",
+                description: "¿Qué es el malware y por qué ha evolucionado?",
+                icon: "fa-dna",
+                content: `
+                    <h2 class="text-2xl font-bold text-white">El Concepto de Malware</h2>
+                    <p class="text-slate-300">Abreviatura de <strong>"Malicious Software"</strong>. Se refiere a cualquier programa diseñado para infiltrarse, dañar o deshabilitar sistemas sin el consentimiento del usuario.</p>
+                    <div class="bg-slate-900 p-4 rounded-xl border-l-4 border-blue-500">
+                        <p class="text-sm"><strong>Objetivo:</strong> Varía desde el simple vandalismo hasta el espionaje corporativo y robo masivo de datos.</p>
+                    </div>
+                    <div class="flex flex-col items-center py-4 bg-slate-700/30 rounded-2xl border border-dashed border-slate-600">
+                        <i class="fas fa-history text-4xl text-blue-400 mb-2"></i>
+                        <p class="text-xs text-slate-400">[Imagen sugerida: Línea de tiempo de la evolución del malware desde los 80s]</p>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mt-4">Evolución</h3>
+                    <p class="text-slate-300">Ha pasado de ser creado por "hobby" a convertirse en una industria criminal organizada y herramientas de ciber-guerra estatal.</p>
+                `,
+                quiz: [
+                    { q: "¿Qué significa el término 'Malware'?", a: ["Software de mantenimiento", "Software malicioso", "Hardware dañado", "Red de área local"], c: 1 },
+                    { q: "¿Cuál es una característica fundamental del malware?", a: ["Siempre es gratuito", "Actúa sin el consentimiento del usuario", "Se borra solo", "Requiere internet de alta velocidad"], c: 1 },
+                    { q: "¿Qué motivaciones menciona el documento para la creación de malware?", a: ["Solo bromas", "Solo robo de dinero", "Desde robo de datos hasta espionaje corporativo", "Optimizar procesos"], c: 2 },
+                    { q: "El malware moderno es a menudo comparado con...", a: ["Un juguete", "Una industria criminal organizada", "Un error de Windows", "Un virus biológico inofensivo"], c: 1 },
+                    { q: "¿Qué sistema intenta 'deshabilitar o dañar' el malware?", a: ["Solo impresoras", "Computadoras y sistemas", "Solo teléfonos fijos", "Electrodomésticos antiguos"], c: 1 }
+                ]
+            },
+            {
+                id: 1,
+                title: "02. Clasificación por Replicación",
+                description: "Virus, Gusanos y Troyanos: ¿Cómo se propagan?",
+                icon: "fa-copy",
+                content: `
+                    <h2 class="text-2xl font-bold text-white">Mecánicas de Difusión</h2>
+                    <div class="grid grid-cols-1 gap-4 mt-4">
+                        <div class="p-4 bg-slate-900 rounded-xl border border-slate-700">
+                            <span class="text-blue-400 font-bold">VIRUS:</span> Requiere intervención humana (ej. abrir un adjunto). Se adjunta a archivos legítimos.
+                        </div>
+                        <div class="p-4 bg-slate-900 rounded-xl border border-slate-700">
+                            <span class="text-green-400 font-bold">GUSANOS:</span> Se replican automáticamente por redes explotando vulnerabilidades.
+                        </div>
+                        <div class="p-4 bg-slate-900 rounded-xl border border-slate-700">
+                            <span class="text-purple-400 font-bold">TROYANOS:</span> No se replican solos. Usan ingeniería social para engañar al usuario.
+                        </div>
+                    </div>
+                    <div class="p-4 bg-slate-700/30 rounded-2xl border border-dashed border-slate-600 text-center mt-4">
+                        <i class="fas fa-network-wired text-3xl text-slate-400 mb-2"></i>
+                        <p class="text-xs text-slate-400">[Imagen sugerida: Diagrama comparativo entre propagación de Virus vs Gusano]</p>
+                    </div>
+                `,
+                quiz: [
+                    { q: "¿Cuál requiere intervención humana para propagarse?", a: ["Gusano", "Virus", "Rootkit", "Backdoor"], c: 1 },
+                    { q: "¿Qué caracteriza a los Gusanos (Worms)?", a: ["Se disfrazan de juegos", "Se replican automáticamente por red", "Borran la BIOS", "Solo afectan a Macs"], c: 1 },
+                    { q: "¿Qué técnica principal usan los Troyanos para el éxito?", a: ["Fuerza bruta", "Ingeniería social", "Magia", "Vulnerabilidades de red"], c: 1 },
+                    { q: "¿Qué abre un Troyano al instalarse?", a: ["Una ventana de chat", "Puertas traseras (Backdoors)", "Un archivo de texto", "La calculadora"], c: 1 },
+                    { q: "A diferencia de los virus, los troyanos...", a: ["Son buenos", "No se replican a sí mismos", "Son muy rápidos", "Solo roban fotos"], c: 1 }
+                ]
+            },
+            {
+                id: 2,
+                title: "03. Amenazas de Alto Impacto",
+                description: "Ransomware, Spyware y Rootkits.",
+                icon: "fa-skull-crossbones",
+                content: `
+                    <h2 class="text-2xl font-bold text-white">Amenazas Críticas</h2>
+                    <p class="text-slate-300">Estas categorías representan los ataques más peligrosos para la privacidad y la economía.</p>
+                    <ul class="space-y-3 mt-4">
+                        <li class="flex items-start"><i class="fas fa-lock text-red-400 mt-1 mr-3"></i> <strong>Ransomware:</strong> Cifra datos y pide un rescate.</li>
+                        <li class="flex items-start"><i class="fas fa-eye text-yellow-400 mt-1 mr-3"></i> <strong>Spyware:</strong> Recopila información sin permiso (ej. Keyloggers).</li>
+                        <li class="flex items-start"><i class="fas fa-ghost text-purple-400 mt-1 mr-3"></i> <strong>Rootkits:</strong> Ocultan la presencia de otros malwares en niveles profundos del SO.</li>
+                    </ul>
+                    <div class="p-4 bg-slate-700/30 rounded-2xl border border-dashed border-slate-600 text-center mt-4">
+                        <p class="text-xs text-slate-400">[Imagen sugerida: Pantalla de bloqueo típica de un ataque de Ransomware]</p>
+                    </div>
+                `,
+                quiz: [
+                    { q: "¿Qué tipo de malware cifra tus archivos y pide pago?", a: ["Spyware", "Ransomware", "Adware", "Worm"], c: 1 },
+                    { q: "¿Qué es un Keylogger?", a: ["Un tipo de virus", "Un tipo de Spyware que registra teclas", "Un programa para abrir puertas", "Un hardware de red"], c: 1 },
+                    { q: "¿Cuál es el objetivo de un Rootkit?", a: ["Cifrar el disco duro", "Ocultar la presencia de malware", "Mostrar anuncios", "Borrar carpetas"], c: 1 },
+                    { q: "El Spyware suele recopilar datos como...", a: ["Contraseñas y hábitos de navegación", "El nombre de tu perro", "La hora local", "El color de fondo"], c: 0 },
+                    { q: "¿Qué malware es el más 'lucrativo' actualmente?", a: ["Gusanos", "Ransomware", "Virus", "Rootkits"], c: 1 }
+                ]
+            },
+            {
+                id: 3,
+                title: "04. Estrategias de Prevención",
+                description: "Defensas: MFA, Backups y actualizaciones.",
+                icon: "fa-user-shield",
+                content: `
+                    <h2 class="text-2xl font-bold text-white">Tu Arsenal de Defensa</h2>
+                    <p class="text-slate-300">La seguridad no es un producto, es un proceso continuo basado en la educación.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 text-sm">
+                        <div class="p-4 bg-green-900/20 border border-green-800 rounded-xl">
+                            <strong>MFA:</strong> Autenticación de múltiples factores.
+                        </div>
+                        <div class="p-4 bg-blue-900/20 border border-blue-800 rounded-xl">
+                            <strong>Backup:</strong> Copias de seguridad externas.
+                        </div>
+                        <div class="p-4 bg-purple-900/20 border border-purple-800 rounded-xl">
+                            <strong>Updates:</strong> Parches de seguridad al día.
+                        </div>
+                        <div class="p-4 bg-orange-900/20 border border-orange-800 rounded-xl">
+                            <strong>Conciencia:</strong> No clics en links sospechosos.
+                        </div>
+                    </div>
+                    <div class="p-4 bg-slate-700/30 rounded-2xl border border-dashed border-slate-600 text-center mt-4">
+                        <p class="text-xs text-slate-400">[Imagen sugerida: Infografía de los 5 pilares de la higiene digital]</p>
+                    </div>
+                `,
+                quiz: [
+                    { q: "¿Qué significa MFA?", a: ["Manual de Fallos Activos", "Multi-Factor Authentication", "Malware Forzado Anónimo", "Métrica de Factores Altos"], c: 1 },
+                    { q: "¿Por qué son importantes los Backups?", a: ["Para tener más archivos", "Para recuperar datos tras un ataque de Ransomware", "Para que la PC vaya más rápido", "No son importantes"], c: 1 },
+                    { q: "¿Qué impide el MFA incluso si roban tu contraseña?", a: ["Que se borre la cuenta", "El acceso no autorizado", "El robo de la PC", "Que el malware se propague"], c: 1 },
+                    { q: "Según el curso, ¿con qué comienza tu seguridad digital?", a: ["Con un antivirus caro", "Con la educación", "Comprando una PC nueva", "Desconectando el cable"], c: 1 },
+                    { q: "¿Qué framework se menciona para seguir aprendiendo?", a: ["MITRE ATT&CK", "GOOGLE LEARNING", "WINDOWS DEFENDER 101", "ANTIVIRUS PRO"], c: 0 }
+                ]
+            }
+        ];
+
+        let currentModule = 0;
+        let currentQuestionIdx = 0;
+        let totalScore = 0;
+        let moduleScore = 0;
+        let completedModules = [];
+
+        function showStart() {
+            hideAll();
+            document.getElementById('screen-start').classList.remove('hidden');
+        }
+
+        function showModuleSelector() {
+            hideAll();
+            const list = document.getElementById('module-list');
+            list.innerHTML = '';
+            courseData.forEach((mod, idx) => {
+                const isCompleted = completedModules.includes(idx);
+                const card = document.createElement('div');
+                card.className = `module-card bg-slate-800 p-6 rounded-3xl border ${isCompleted ? 'border-green-500 shadow-[0_0_15px_rgba(34,197,94,0.2)]' : 'border-slate-700'} hover:border-cyan-500 cursor-pointer transition-all group relative`;
+                card.onclick = () => loadModule(idx);
+                card.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div class="h-12 w-12 rounded-2xl bg-slate-700 flex items-center justify-center text-2xl text-cyan-400 group-hover:scale-110 transition-transform">
+                            <i class="fas ${mod.icon}"></i>
+                        </div>
+                        ${isCompleted ? '<span class="text-green-500 text-[10px] font-bold bg-green-900/30 px-2 py-1 rounded-full border border-green-500/30">COMPLETADO</span>' : ''}
+                    </div>
+                    <h3 class="text-xl font-bold mt-4">${mod.title}</h3>
+                    <p class="text-slate-400 text-sm mt-2">${mod.description}</p>
+                `;
+                list.appendChild(card);
+            });
+            document.getElementById('screen-modules').classList.remove('hidden');
+        }
+
+        function loadModule(idx) {
+            currentModule = idx;
+            currentQuestionIdx = 0;
+            moduleScore = 0;
+            hideAll();
+            document.getElementById('module-badge').innerText = `Módulo ${idx + 1}`;
+            document.getElementById('module-body').innerHTML = courseData[idx].content;
+            document.getElementById('screen-content').classList.remove('hidden');
+            window.scrollTo(0,0);
+        }
+
+        function startQuiz() {
+            hideAll();
+            updateQuizUI();
+            document.getElementById('screen-quiz').classList.remove('hidden');
+        }
+
+        function updateQuizUI() {
+            const mod = courseData[currentModule];
+            const q = mod.quiz[currentQuestionIdx];
+            document.getElementById('quiz-progress-text').innerText = `Pregunta ${currentQuestionIdx + 1} de 5`;
+            document.getElementById('quiz-progress-bar').style.width = `${((currentQuestionIdx + 1) / 5) * 100}%`;
+            document.getElementById('quiz-question').innerText = q.q;
+            for(let i=0; i<4; i++) document.getElementById(`opt-${i}`).innerText = q.a[i];
+        }
+
+        function checkAnswer(selectedIdx) {
+            const correctIdx = courseData[currentModule].quiz[currentQuestionIdx].c;
+            const isCorrect = selectedIdx === correctIdx;
+            hideAll();
+            const feedback = document.getElementById('screen-feedback');
+            const iconContainer = document.getElementById('feedback-icon-container');
+            const title = document.getElementById('feedback-title');
+            const pointsText = document.getElementById('feedback-points');
+            
+            if (isCorrect) {
+                iconContainer.className = "h-24 w-24 mx-auto rounded-full flex items-center justify-center text-4xl mb-4 bg-green-500 text-white shadow-lg";
+                iconContainer.innerHTML = '<i class="fas fa-check"></i>';
+                title.innerText = "¡SÍ! RESPUESTA CORRECTA";
+                title.className = "text-3xl font-black text-green-500";
+                moduleScore += 1000;
+                totalScore += 1000;
+                pointsText.innerText = "+ 1000 XP";
+            } else {
+                iconContainer.className = "h-24 w-24 mx-auto rounded-full flex items-center justify-center text-4xl mb-4 bg-red-500 text-white shadow-lg";
+                iconContainer.innerHTML = '<i class="fas fa-times"></i>';
+                title.innerText = "INCORRECTO";
+                title.className = "text-3xl font-black text-red-500";
+                pointsText.innerText = "+ 0 XP";
+            }
+            document.getElementById('total-score').innerText = `${totalScore.toLocaleString()} XP`;
+            feedback.classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            currentQuestionIdx++;
+            if (currentQuestionIdx < 5) {
+                hideAll();
+                updateQuizUI();
+                document.getElementById('screen-quiz').classList.remove('hidden');
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            hideAll();
+            if (!completedModules.includes(currentModule)) completedModules.push(currentModule);
+            document.getElementById('final-module-score').innerText = moduleScore;
+            document.getElementById('screen-results').classList.remove('hidden');
+        }
+
+        function hideAll() {
+            ['screen-start', 'screen-modules', 'screen-content', 'screen-quiz', 'screen-feedback', 'screen-results'].forEach(s => document.getElementById(s).classList.add('hidden'));
+        }
+
+        window.onload = showStart;
+    </script>
+</body>
+</html>
